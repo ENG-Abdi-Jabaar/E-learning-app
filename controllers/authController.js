@@ -1,38 +1,52 @@
 const User = require('../models/User')
 const bcrypt = require('bcryptjs')
-
+const jwt = require('jsonwebtoken'); // add if not already
 exports.register = async (req, res) => {
-    const { username, email, password, role} = req.body
+  const { username, email, phone, password, role } = req.body;
 
-    try {
-        //check if email already exists
-        const existingUser = await User.findOne({email})
-        if(existingUser) {
-            return res.status(400).json({msg: 'User Already Exists'})
-        }
-
-        // hashing the password before saving
-        const salt = await bcrypt.genSalt(10) // higher = safer but slower
-        const hashedPassword = await bcrypt.hash(password, salt)
-
-        // create And save user
-        const user = new User({
-            username,
-            email,
-            password: hashedPassword,
-            role //optional, default is 'user'
-        })
-
-        await user.save()
-
-        // send success response
-        res.status(201).json({msg: 'user registered successfuly'})
-
-    } catch (error) {
-        console.error('registration error...', error.message)
-        res.status(500).json({msg: 'server error during registration'})
+  try {
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
     }
-}
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = new User({
+      username,
+      phone,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      role,
+    });
+
+    await user.save();
+
+    // ✅ Generate token
+    const payload = { id: user._id, role: user.role };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    // ✅ Send token and user info
+    res.status(201).json({
+      msg: 'User registered successfully',
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+  } catch (error) {
+    console.error('registration error...', error.message);
+    res.status(500).json({ message: 'Server error during registration' });
+  }
+};
+
 
 
 exports.login = async (req, res) => {
