@@ -3,14 +3,14 @@ const Course = require('../models/courseModel');
 // Create a new course
 exports.createCourse = async (req, res) => {
   try {
-    const { title, description, instructor, duration, price } = req.body;
+    const { title, description, duration, price,category } = req.body;
 
     const newCourse = new Course({
       title,
       description,
-      instructor,
       duration,
-      price
+      price,
+      category
     });
 
     await newCourse.save();

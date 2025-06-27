@@ -23,12 +23,27 @@ exports.addToCart = async (req, res) => {
 };
 
 // Get user's cart
+// Get user's cart with total
 exports.getCart = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    // Populate course to access price
     const cart = await Cart.findOne({ userId }).populate('courses.course');
+
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
-    res.status(200).json(cart);
+
+    // 🔢 Dynamically calculate total
+    const total = cart.courses.reduce((sum, item) => {
+      return sum + (item.course?.price || 0); // fallback in case course is null
+    }, 0);
+
+    // ✅ Respond with cart + total
+    res.status(200).json({
+      cart,
+      total
+    });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

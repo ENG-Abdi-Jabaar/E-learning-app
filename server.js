@@ -8,6 +8,10 @@ const cartRoutes = require('./routes/cartRoutes'); // 📘 Cart management
 const orderRoutes = require('./routes/orderRoutes'); // ✅ Add this line
 const lessonRoutes = require('./routes/lessonRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes'); // 🟩 Favorites
+const categoryRoutes = require('./routes/categoryRoutes') // ✅ Added this
+const progressRoutes = require('./routes/progressRoutes');
+const enrollmentRoutes = require('./routes/enrollmentRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 
 //this connects to MongoDB
@@ -31,6 +35,10 @@ app.use('/api/cart', cartRoutes); // All cart routes will be under /api/cart
 app.use('/api/orders', orderRoutes);  // 🧾 Orders ✅
 app.use('/api/lessons', lessonRoutes);
 app.use('/api/favorites', favoriteRoutes); // 🟢 Favorites routes
+app.use('/api/categories', categoryRoutes) // ✅ Category routes added here
+app.use('/api/progress', progressRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/payment', paymentRoutes);
 
 
 

@@ -11,10 +11,10 @@ exports.createLesson = async (req, res) => {
     }
 
     const newLesson = new Lesson({
-      courseId,
+      course: courseId, // Match the new key in the schema
       title,
       duration,
-      videoUrl: `/uploads/${videoFile.filename}`  // 📁 Store path to access video
+      videoUrl: `/uploads/${videoFile.filename}`
     });
 
     await newLesson.save();
@@ -23,12 +23,11 @@ exports.createLesson = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 // ✅ Get all lessons for a course
 exports.getLessonsByCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const lessons = await Lesson.find({ courseId });
+    const lessons = await Lesson.find({ course: courseId }); // ✅ use 'course' here, not 'courseId'
     res.status(200).json(lessons);
   } catch (error) {
     res.status(500).json({ error: error.message });
